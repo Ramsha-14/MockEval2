@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Management</title>
+</head>
+<body>
+    <h1>Add Questions</h1>
+    <form id="addQuestions">
+        <label for="questions">Questions Statement:</label>
+        <input type ="text" id="questions"name="question"required><br><br>
+
+        <label for="option A">Option A:</label>
+        <input type ="text" id="option A"name="option A"required><br><br>
+
+        <label for="option B">Option A:</label>
+        <input type ="text" id="option B"name="option B"required><br><br>
+
+        <label for="option C">Option A:</label>
+        <input type ="text" id="option C"name="option C"required><br><br>
+
+        <label for="option D">Option A:</label>
+        <input type ="text" id="option D"name="option D"required><br><br>
+
+        <label for="correctOption">Correct Option:</label>
+        <select id="correctOption" name="correctOption">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+        </select><br><br>
+        <button type = "questionGrid"></button>
+        </form>
+        <h1>Questions</h1>
+        <div id = "questionsGrid"></div>
+        <script>
+            const addQuestionsForm = document.getElementById('addQuestionsForm');
+            const questionGrid=document.getElementById('questionsGrid');
+            function addQuestions(questionData){
+                fetch('/questions',{
+                    method:'POST',
+                    headers:{
+                        'Content-type':'application/json'
+                    },
+                    body:JSON.stringlyfy(questionData)
+                })
+                .then(response=>{
+                    if(response.ok){
+                        alret("Question Created");
+                        addQuestionsForm.reset();
+                        fetchQuestions();
+                    }else{
+                        alret("Error adding Questions");
+                    }
+                })
+                .catch(error=>{
+                    console.error('Error:',error);
+                });
+            }
+            function fetchQuestions(){
+                fetch('/questions')
+                .then(response=>response.json())
+                .then(question=>{
+                    questionsGrid.innerHTML = '';
+                    questions.forEach(questions => {
+                        const questionCard=document.getElementById('div');
+                        questionCard.classList.add('question-card');
+                        if(!question.reviewed){
+                            questionCard.stylr.border = '2px solid blue';
+                        }
+                        questionCard.innerHTML=`
+                        <h3>${question,question}</h3>
+                        <p>A:${question.optionA}</p>
+                        <p>B:${question.optionB}</p>
+                        <p>C:${question.optionC}</p>
+                        <p>D:${question.optionD}</p>
+                        <p>Correct Option:${question.correctOption}</p>
+                        <button class = "review-button">Review Question</button>
+                        `;
+                        questionGrid.appendChild(questionCard);
+                        const reviewButton=questionCard.querySelector('.review-button');
+                        reviewButton .addEventListener('click',()=>{
+                            if(confirm("Are you sure you want to review the question?"))
+                        }
+                    reviewQuestion(question._id);
+                    }
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Error:',error);
+        });
+        function reviewQuestion(questionid){
+            fetch(`/questions/${question}`,{
+                method:'PATCH',
+                headers:{
+                    'Content-Type':'application/json'
+                },
+                body:JSON.stringify({reviewed:true})
+            })
+            .then(response=>{
+                if(response.ok){
+                    fetchQuestion();
+                }else{
+                    alret("Error reviewing question.");
+                }
+            })
+            .catch(error=>{
+                console.error('Error:',error);
+            });
+
+            }
+            addQuestionsForm.addEventListener('submit',(event)=>){
+                event.preventDefault();
+                const questionData={question:document.getElementById('questions'.value,
+                    optionA:document.getElementById('optionA').value,
+                    optionB:document.getElementById('optionB').value,
+                    optionC:document.getElementById('optionC').value,
+                    optionD:document.getElementById('optionD').value,
+                    correctOption:document.getElementById('correctOption').value,reviewed:false};
+                    addQuestions(questionData);
+                )};
+            }
+        }
+                fetchQuestions();
+</script>
+</body>
+</html>
